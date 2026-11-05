@@ -19,7 +19,7 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
   return (
     <li className={className}>
       <div className="task-item__header">
-        {/* Умовний рендеринг: позначка показується лише для виконаного завдання */}
+        {/* Умовний рендеринг:позначка показується лише для виконаного завдання */}
         {task.completed && (
           <span className="task-item__status" aria-label="Виконано">
             ✓

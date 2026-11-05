@@ -12,7 +12,7 @@ interface TaskListProps {
 }
 
 function TaskList({ tasks, totalCount, onToggle, onDelete }: TaskListProps) {
-  // Умовний рендеринг: два різні повідомлення для порожнього стану
+  //Умовний рендеринг: два різні повідомлення для порожнього стану
   if (tasks.length === 0) {
     return totalCount === 0 ? (
       <div className="task-list__empty">

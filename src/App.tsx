@@ -18,7 +18,7 @@ function App() {
   const [filter, setFilter] = useState<TaskFilter>('all')
   const [query, setQuery] = useState('')
 
-  // Нове завдання додається на початок нового масиву (immutable update)
+  //Нове завдання додається на початок нового масиву (immutable update)
   function handleAddTask(newTask: NewTask) {
     setTasks((prev) => [{ ...newTask, id: getNextId(prev), completed: false }, ...prev])
   }
