@@ -1,0 +1,18 @@
+@use '../styles/variables' as *;
+
+.task-search {
+  margin-bottom: 0.75rem;
+
+  &__input {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+
+    &:focus {
+      outline: 2px solid rgba($color-primary, 0.35);
+      border-color: $color-primary;
+    }
+  }
+}
