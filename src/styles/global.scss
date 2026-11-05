@@ -1,0 +1,33 @@
+@use './variables' as *;
+
+// Лише базові стилі елементів. Стилі компонентів лежать поруч із ними (BEM)
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: $color-bg;
+  color: $color-text;
+  font-family: $font-family;
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+// Текст лише для скрінрідерів (підписи до полів без видимого label)
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

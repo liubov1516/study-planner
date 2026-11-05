@@ -1,0 +1,114 @@
+@use '../styles/variables' as *;
+
+.task-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-left: 4px solid $color-primary;
+  border-radius: $radius;
+  box-shadow: $shadow;
+
+  // Виконане завдання: приглушене, закреслена назва, зелена смужка
+  &--completed {
+    border-left-color: $color-success;
+    background: #f1f8f3;
+
+    .task-item__title {
+      color: $color-text-muted;
+      text-decoration: line-through;
+    }
+
+    .task-item__description {
+      opacity: 0.7;
+    }
+  }
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__status {
+    color: $color-success;
+    font-weight: 700;
+  }
+
+  &__title {
+    flex: 1;
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  &__description {
+    margin: 0;
+    color: $color-text-muted;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__badge {
+    padding: 0.1rem 0.6rem;
+    border-radius: 999px;
+    background: #eef0f6;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    &--low {
+      background: rgba($color-priority-low, 0.12);
+      color: $color-priority-low;
+    }
+
+    &--medium {
+      background: rgba($color-priority-medium, 0.14);
+      color: $color-priority-medium;
+    }
+
+    &--high {
+      background: rgba($color-priority-high, 0.12);
+      color: $color-priority-high;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  &__button {
+    padding: 0.35rem 0.9rem;
+    background: #fff;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+
+    &--toggle {
+      border-color: $color-primary;
+      color: $color-primary;
+
+      &:hover {
+        background: rgba($color-primary, 0.08);
+      }
+    }
+
+    &--delete {
+      border-color: $color-danger;
+      color: $color-danger;
+
+      &:hover {
+        background: rgba($color-danger, 0.08);
+      }
+    }
+  }
+}
