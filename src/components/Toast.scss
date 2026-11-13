@@ -1,0 +1,81 @@
+@use '../styles/variables' as *;
+
+.toast {
+  position: relative;
+  overflow: hidden;
+  min-width: 260px;
+  max-width: 360px;
+  background: #1f2430;
+  border-left: 4px solid $color-primary;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  pointer-events: auto;
+  animation: toast-in 0.2s ease-out;
+
+  &--success {
+    border-left-color: $color-success;
+  }
+
+  &--error {
+    border-left-color: $color-danger;
+  }
+
+  &__body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  &__message {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  &__action {
+    flex-shrink: 0;
+    padding: 0.25rem 0.75rem;
+    background: transparent;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  // Смужка зменшується від повної ширини до нуля за час, який лишився до видалення
+  &__progress {
+    height: 4px;
+    background: #fbbf24;
+    transform-origin: left;
+    animation: toast-progress var(--toast-duration) linear forwards;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
