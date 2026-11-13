@@ -1,6 +1,7 @@
 # Study Planner
 
-Лабораторна робота №8: React Fundamentals (компоненти, JSX, props, useState, події, списки).
+Лабораторні роботи №8 і №9: React Fundamentals та React State/Effects
+(Context API, useReducer, useEffect, Custom Hooks, localStorage).
 Стек: React 19, TypeScript, Vite, SCSS + BEM, ESLint.
 
 ## Запуск
@@ -18,32 +19,35 @@ npm run build
 
 ```
 src/
-  components/   Header, TaskForm, TaskStats, TaskFilters, TaskSearch, TaskList, TaskItem (+ .scss кожного)
-  types/        task.ts: Task, NewTask, Priority, TaskFilter
-  data/         initialTasks.ts: початкові дані
+  components/   Header, TaskForm, TaskStats, TaskSearch, TaskFilters, TaskList, TaskItem, Toast, ToastHost (+ .scss)
+  context/      TaskContext.ts (контекст і його тип), TaskProvider.tsx (стан, ефекти, операції)
+  hooks/        useTaskContext, useLocalStorage, useDocumentTitle
+  reducers/     taskReducer.ts (чиста функція + типи action)
+  types/        task.ts, toast.ts
+  data/         initialTasks.ts, constants.ts
+  utils/        storage.ts (безпечний localStorage), guards.ts (перевірка збережених даних)
   styles/       _variables.scss, global.scss
-  App.tsx       єдине місце зі станом (tasks, filter, query) і обробниками
-  main.tsx
 ```
 
-```
-App
-├── Header
-├── TaskForm
-├── TaskStats
-├── TaskSearch
-├── TaskFilters
-└── TaskList
-    └── TaskItem (для кожного завдання)
-```
+## Як організовано state (лабораторна №9)
 
-## Що реалізовано
+- **useReducer**: `taskReducer` керує `tasks` і видаленням, що очікує підтвердження. Дії: `add`, `toggle`, `update`,
+  `requestDelete`, `confirmDelete`, `undoDelete`, `clearCompleted`, `reset`. Reducer чистий: без таймерів, DOM та localStorage.
+- **Context API**: `TaskProvider` створює значення контексту, компоненти беруть його через `useTaskContext()`
+  (поза провайдером кидається зрозуміла помилка). Значення контексту мемоїзоване (`useMemo` + `useCallback`).
+- **useEffect** (у `TaskProvider`): запис `tasks` у localStorage, таймер Undoable Delete з `clearTimeout` у cleanup.
+  Заголовок вкладки синхронізує `useDocumentTitle`.
+- **localStorage**: `tasks` читаються під час ініціалізації reducer (пошкоджений JSON або неправильна форма даних
+  замінюються початковим списком). Активний фільтр зберігається через `useLocalStorage`. Reducer залишається
+  єдиним джерелом правди, localStorage лише зберігає копію.
+- **Derived state**: відфільтрований список і статистика обчислюються під час рендеру, без useEffect.
+- **Undoable Delete**: «Видалити» позначає завдання «Буде видалено», показує Toast із прогресом 5 секунд і кнопкою
+  «Скасувати». Після таймера виконується `confirmDelete`. Так само працює «Очистити виконані».
+- **Toast**: власний компонент без бібліотек (створення, редагування, видалення, помилки). Автозакриття таймером
+  через `useEffectEvent`: актуальний `onClose` читається в момент спрацювання, тому новий callback від батька
+  не перезапускає таймер.
 
-- Список завдань (`map` зі стабільним `key = task.id`), додавання, позначення виконаним / повернення, видалення.
-- Незмінні оновлення масиву: `[new, ...prev]`, `prev.map(...)`, `prev.filter(...)`.
-- Фільтри Всі / Виконані / Не виконані: список для екрана обчислюється під час рендеру, масив `tasks` не змінюється.
-- Статистика (усього / виконано / не виконано) обчислюється з поточного масиву, без окремого state.
-- Умовний рендеринг: порожній список, порожній результат фільтра, позначка виконаного завдання.
-- Валідація назви без бібліотек, помилка показується на сторінці (без `alert`).
-- Додатково: пошук за назвою, лічильники в кнопках фільтра, кнопка «Очистити виконані».
-- Стилі: SCSS + BEM, стилі компонента лежать поруч із ним.
+## Запуск
+
+Див. розділ вище. Дані зберігаються в localStorage (ключі `study-planner:tasks` та `study-planner:filter`),
+кнопка «Скинути дані» повертає початковий список.
