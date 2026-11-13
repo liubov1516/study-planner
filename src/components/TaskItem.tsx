@@ -1,3 +1,4 @@
+import { useTaskContext } from '../hooks/useTaskContext'
 import type { Priority, Task } from '../types/task'
 import './TaskItem.scss'
 
@@ -9,23 +10,39 @@ const PRIORITY_LABELS: Record<Priority, string> = {
 
 interface TaskItemProps {
   task: Task
-  onToggle: (id: number) => void
-  onDelete: (id: number) => void
 }
 
-function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
-  const className = task.completed ? 'task-item task-item--completed' : 'task-item'
+function TaskItem({ task }: TaskItemProps) {
+  // Дії беремо з контексту, а не через props з батьківських компонентів
+  const { pendingDelete, editingTask, startEdit, toggleTask, requestDelete } = useTaskContext()
+  const isPendingDelete = pendingDelete?.ids.includes(task.id) ?? false
+  const isEditing = editingTask?.id === task.id
+
+  function handleEdit() {
+    startEdit(task.id)
+    // Форма знаходиться вгорі сторінки, тому прокручуємо до неї
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  const className = [
+    'task-item',
+    task.completed && 'task-item--completed',
+    isEditing && 'task-item--editing',
+    isPendingDelete && 'task-item--pending',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <li className={className}>
       <div className="task-item__header">
-        {/* Умовний рендеринг:позначка показується лише для виконаного завдання */}
+        {/* Умовний рендеринг: позначка показується лише для виконаного завдання */}
         {task.completed && (
           <span className="task-item__status" aria-label="Виконано">
             ✓
           </span>
         )}
         <h3 className="task-item__title">{task.title}</h3>
+        {isPendingDelete && <span className="task-item__pending-label">Буде видалено</span>}
       </div>
 
       {task.description && <p className="task-item__description">{task.description}</p>}
@@ -42,14 +59,24 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
         <button
           className="task-item__button task-item__button--toggle"
           type="button"
-          onClick={() => onToggle(task.id)}
+          disabled={isPendingDelete}
+          onClick={() => toggleTask(task.id)}
         >
           {task.completed ? 'Повернути в роботу' : 'Позначити виконаним'}
         </button>
         <button
+          className="task-item__button"
+          type="button"
+          disabled={isPendingDelete}
+          onClick={handleEdit}
+        >
+          Редагувати
+        </button>
+        <button
           className="task-item__button task-item__button--delete"
           type="button"
-          onClick={() => onDelete(task.id)}
+          disabled={isPendingDelete}
+          onClick={() => requestDelete(task.id)}
         >
           Видалити
         </button>

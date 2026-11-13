@@ -1,3 +1,4 @@
+import { useTaskContext } from '../hooks/useTaskContext'
 import type { TaskFilter } from '../types/task'
 import './TaskFilters.scss'
 
@@ -7,15 +8,17 @@ const FILTERS: { value: TaskFilter; label: string }[] = [
   { value: 'active', label: 'Не виконані' },
 ]
 
-interface TaskFiltersProps {
-  filter: TaskFilter
-  // Кількість завдань для кожного фільтра (показується в кнопках)
-  counts: Record<TaskFilter, number>
-  onFilterChange: (filter: TaskFilter) => void
-  onClearCompleted: () => void
-}
+function TaskFilters() {
+  const { tasks, filter, setFilter, clearCompleted, resetTasks } = useTaskContext()
 
-function TaskFilters({ filter, counts, onFilterChange, onClearCompleted }: TaskFiltersProps) {
+  // Кількість завдань для кожного фільтра (derived state)
+  const completedCount = tasks.filter((task) => task.completed).length
+  const counts: Record<TaskFilter, number> = {
+    all: tasks.length,
+    completed: completedCount,
+    active: tasks.length - completedCount,
+  }
+
   return (
     <div className="task-filters" role="group" aria-label="Фільтр завдань">
       {FILTERS.map(({ value, label }) => (
@@ -28,7 +31,7 @@ function TaskFilters({ filter, counts, onFilterChange, onClearCompleted }: TaskF
           }
           type="button"
           aria-pressed={value === filter}
-          onClick={() => onFilterChange(value)}
+          onClick={() => setFilter(value)}
         >
           {label} ({counts[value]})
         </button>
@@ -38,11 +41,18 @@ function TaskFilters({ filter, counts, onFilterChange, onClearCompleted }: TaskF
         <button
           className="task-filters__button task-filters__button--clear"
           type="button"
-          onClick={onClearCompleted}
+          onClick={clearCompleted}
         >
           Очистити виконані
         </button>
       )}
+      <button
+        className="task-filters__button task-filters__button--reset"
+        type="button"
+        onClick={resetTasks}
+      >
+        Скинути дані
+      </button>
     </div>
   )
 }

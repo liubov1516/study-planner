@@ -1,13 +1,10 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import type { NewTask, Priority } from '../types/task'
+import { useTaskContext } from '../hooks/useTaskContext'
+import type { NewTask, Priority, Task } from '../types/task'
 import './TaskForm.scss'
 
 const DEFAULT_CATEGORY = 'Загальне'
-
-interface TaskFormProps {
-  onAddTask: (task: NewTask) => void
-}
 
 const emptyForm: NewTask = {
   title: '',
@@ -16,9 +13,23 @@ const emptyForm: NewTask = {
   priority: 'medium',
 }
 
-function TaskForm({ onAddTask }: TaskFormProps) {
+function getInitialValues(task: Task | null): NewTask {
+  if (!task) {
+    return emptyForm
+  }
+  return {
+    title: task.title,
+    description: task.description,
+    category: task.category,
+    priority: task.priority,
+  }
+}
+
+function TaskForm() {
+  const { editingTask, addTask, updateTask, cancelEdit, showToast } = useTaskContext()
+  const isEditing = editingTask !== null
   // Одне поле стану для всієї форми: оновлюємо його новим об'єктом, а не змінюємо наявний
-  const [values, setValues] = useState<NewTask>(emptyForm)
+  const [values, setValues] = useState<NewTask>(() => getInitialValues(editingTask))
   const [error, setError] = useState('')
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -27,17 +38,25 @@ function TaskForm({ onAddTask }: TaskFormProps) {
     const title = values.title.trim()
     if (title === '') {
       setError('Вкажіть назву завдання.')
+      showToast('error', 'Завдання не збережено: назва обов’язкова.')
       return
     }
 
-    onAddTask({
+    const data: NewTask = {
       title,
       description: values.description.trim(),
       category: values.category.trim() || DEFAULT_CATEGORY,
       priority: values.priority,
-    })
-    // Після успішного додавання форма очищується
-    setValues(emptyForm)
+    }
+
+    if (editingTask) {
+      // Зміни проходять через dispatch та reducer. Після збереження режим редагування закривається
+      updateTask(editingTask.id, data)
+    } else {
+      addTask(data)
+      // Після успішного додавання форма очищується
+      setValues(emptyForm)
+    }
     setError('')
   }
 
@@ -46,8 +65,8 @@ function TaskForm({ onAddTask }: TaskFormProps) {
     : 'task-form__input'
 
   return (
-    <form className="task-form" onSubmit={handleSubmit} noValidate>
-      <h2 className="task-form__title">Нове завдання</h2>
+    <form className={isEditing ? 'task-form task-form--editing' : 'task-form'} onSubmit={handleSubmit} noValidate>
+      <h2 className="task-form__title">{isEditing ? 'Редагування завдання' : 'Нове завдання'}</h2>
 
       <div className="task-form__field">
         <label className="task-form__label" htmlFor="task-title">
@@ -124,9 +143,16 @@ function TaskForm({ onAddTask }: TaskFormProps) {
         </div>
       </div>
 
-      <button className="task-form__submit" type="submit">
-        Додати
-      </button>
+      <div className="task-form__actions">
+        <button className="task-form__submit" type="submit">
+          {isEditing ? 'Зберегти' : 'Додати'}
+        </button>
+        {isEditing && (
+          <button className="task-form__cancel" type="button" onClick={cancelEdit}>
+            Скасувати
+          </button>
+        )}
+      </div>
     </form>
   )
 }
