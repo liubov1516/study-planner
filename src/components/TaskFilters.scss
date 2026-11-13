@@ -17,6 +17,10 @@
       border-color: $color-primary;
     }
 
+    &--reset {
+      color: $color-text-muted;
+    }
+
     &--clear {
       margin-left: auto;
       border-color: $color-danger;

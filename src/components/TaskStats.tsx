@@ -1,12 +1,10 @@
-import type { Task } from '../types/task'
+import { useTaskContext } from '../hooks/useTaskContext'
 import './TaskStats.scss'
 
-interface TaskStatsProps {
-  tasks: Task[]
-}
+function TaskStats() {
+  const { tasks } = useTaskContext()
 
-function TaskStats({ tasks }: TaskStatsProps) {
-  // Лічильники обчислюються з поточного масиву, окремий state для них не потрібен
+  // Derived state: лічильники обчислюються під час рендеру, без useEffect і окремого state
   const total = tasks.length
   const completed = tasks.filter((task) => task.completed).length
   const active = total - completed
