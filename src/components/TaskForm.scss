@@ -10,6 +10,11 @@
   border-radius: $radius;
   box-shadow: $shadow;
 
+  &--editing {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+  }
+
   &__title {
     margin: 0;
     font-size: 1.15rem;
@@ -58,8 +63,24 @@
     font-size: 0.85rem;
   }
 
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__cancel {
+    padding: 0.55rem 1.2rem;
+    background: #fff;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $color-primary;
+    }
+  }
+
   &__submit {
-    justify-self: start;
     padding: 0.55rem 1.4rem;
     background: $color-primary;
     border: 0;

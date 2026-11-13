@@ -11,7 +11,7 @@
   border-radius: $radius;
   box-shadow: $shadow;
 
-  //Виконане завдання: приглушене, закреслена назва, зелена смужка
+  // Виконане завдання: приглушене, закреслена назва, зелена смужка
   &--completed {
     border-left-color: $color-success;
     background: #f1f8f3;
@@ -24,6 +24,25 @@
     .task-item__description {
       opacity: 0.7;
     }
+  }
+
+  // Завдання, яке очікує видалення (ще можна натиснути Undo)
+  &--pending {
+    border-left-color: $color-danger;
+    border-style: dashed;
+    opacity: 0.55;
+  }
+
+  &__pending-label {
+    color: $color-danger;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  // Завдання, яке зараз редагується
+  &--editing {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
   }
 
   &__header {
@@ -92,6 +111,11 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
 
     &--toggle {
       border-color: $color-primary;
