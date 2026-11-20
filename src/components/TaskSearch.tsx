@@ -1,9 +1,11 @@
-import { useTaskContext } from '../hooks/useTaskContext'
 import './TaskSearch.scss'
 
-function TaskSearch() {
-  const { query, setQuery } = useTaskContext()
+interface TaskSearchProps {
+  value: string
+  onChange: (value: string) => void
+}
 
+function TaskSearch({ value, onChange }: TaskSearchProps) {
   return (
     <div className="task-search">
       <label className="visually-hidden" htmlFor="task-search">
@@ -13,9 +15,9 @@ function TaskSearch() {
         id="task-search"
         className="task-search__input"
         type="search"
-        value={query}
+        value={value}
         placeholder="Пошук за назвою"
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => onChange(event.target.value)}
       />
     </div>
   )
