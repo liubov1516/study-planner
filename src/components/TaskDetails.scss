@@ -1,0 +1,53 @@
+@use '../styles/variables' as *;
+
+.task-details {
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+  background: $color-surface;
+  border: 1px solid $color-primary;
+  border-radius: $radius;
+  box-shadow: $shadow;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__heading {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  &__close {
+    padding: 0.3rem 0.9rem;
+    background: #fff;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1rem;
+    margin: 0;
+  }
+
+  &__term {
+    color: $color-text-muted;
+    font-weight: 600;
+  }
+
+  &__value {
+    margin: 0;
+  }
+
+  &__note {
+    margin: 0.75rem 0 0;
+    color: $color-text-muted;
+    font-size: 0.85rem;
+  }
+}
