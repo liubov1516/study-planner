@@ -1,0 +1,57 @@
+@use '../styles/variables' as *;
+
+.confirm-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(31, 36, 48, 0.55);
+
+  &__box {
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+    background: $color-surface;
+    border-radius: $radius;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  &__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.15rem;
+  }
+
+  &__message {
+    margin: 0 0 1.25rem;
+    color: $color-text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  &__button {
+    padding: 0.45rem 1.2rem;
+    background: #fff;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    &--danger {
+      background: $color-danger;
+      border-color: $color-danger;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
