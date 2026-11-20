@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { useTaskContext } from '../hooks/useTaskContext'
 import type { NewTask, Priority, Task } from '../types/task'
 import './TaskForm.scss'
 
-const DEFAULT_CATEGORY = 'Загальне'
+const DEFAULT_CATEGORY = 'General'
 
 const emptyForm: NewTask = {
   title: '',
@@ -25,39 +24,47 @@ function getInitialValues(task: Task | null): NewTask {
   }
 }
 
-function TaskForm() {
-  const { editingTask, addTask, updateTask, cancelEdit, showToast } = useTaskContext()
+interface TaskFormProps {
+  // Завдання, яке редагується (null: форма створює нове)
+  editingTask: Task | null
+  // Виконує запит через repository. Повертає true, якщо операція вдалася
+  onSubmit: (data: NewTask) => Promise<boolean>
+  onCancel: () => void
+}
+
+function TaskForm({ editingTask, onSubmit, onCancel }: TaskFormProps) {
   const isEditing = editingTask !== null
-  // Одне поле стану для всієї форми: оновлюємо його новим об'єктом, а не змінюємо наявний
   const [values, setValues] = useState<NewTask>(() => getInitialValues(editingTask))
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  // Inline success state після створення
+  const [successMessage, setSuccessMessage] = useState('')
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setSuccessMessage('')
 
     const title = values.title.trim()
     if (title === '') {
       setError('Вкажіть назву завдання.')
-      showToast('error', 'Завдання не збережено: назва обов’язкова.')
       return
     }
+    setError('')
 
-    const data: NewTask = {
+    setIsSubmitting(true)
+    const ok = await onSubmit({
       title,
       description: values.description.trim(),
       category: values.category.trim() || DEFAULT_CATEGORY,
       priority: values.priority,
-    }
+    })
+    setIsSubmitting(false)
 
-    if (editingTask) {
-      // Зміни проходять через dispatch та reducer. Після збереження режим редагування закривається
-      updateTask(editingTask.id, data)
-    } else {
-      addTask(data)
-      // Після успішного додавання форма очищується
+    // Форма очищується лише після успішного створення
+    if (ok && !isEditing) {
       setValues(emptyForm)
+      setSuccessMessage('Завдання додано.')
     }
-    setError('')
   }
 
   const titleClassName = error
@@ -65,7 +72,11 @@ function TaskForm() {
     : 'task-form__input'
 
   return (
-    <form className={isEditing ? 'task-form task-form--editing' : 'task-form'} onSubmit={handleSubmit} noValidate>
+    <form
+      className={isEditing ? 'task-form task-form--editing' : 'task-form'}
+      onSubmit={handleSubmit}
+      noValidate
+    >
       <h2 className="task-form__title">{isEditing ? 'Редагування завдання' : 'Нове завдання'}</h2>
 
       <div className="task-form__field">
@@ -87,7 +98,6 @@ function TaskForm() {
             }
           }}
         />
-        {/* Повідомлення про помилку виводиться на сторінці, а не через alert */}
         {error && (
           <p id="task-title-error" className="task-form__error" role="alert">
             {error}
@@ -144,15 +154,26 @@ function TaskForm() {
       </div>
 
       <div className="task-form__actions">
-        <button className="task-form__submit" type="submit">
-          {isEditing ? 'Зберегти' : 'Додати'}
+        <button className="task-form__submit" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Збереження...' : isEditing ? 'Зберегти' : 'Додати'}
         </button>
         {isEditing && (
-          <button className="task-form__cancel" type="button" onClick={cancelEdit}>
+          <button
+            className="task-form__cancel"
+            type="button"
+            disabled={isSubmitting}
+            onClick={onCancel}
+          >
             Скасувати
           </button>
         )}
       </div>
+
+      {successMessage && (
+        <p className="task-form__success" role="status">
+          {successMessage}
+        </p>
+      )}
     </form>
   )
 }
