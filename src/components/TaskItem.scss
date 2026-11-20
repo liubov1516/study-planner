@@ -26,25 +26,6 @@
     }
   }
 
-  // Завдання, яке очікує видалення (ще можна натиснути Undo)
-  &--pending {
-    border-left-color: $color-danger;
-    border-style: dashed;
-    opacity: 0.55;
-  }
-
-  &__pending-label {
-    color: $color-danger;
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-
-  // Завдання, яке зараз редагується
-  &--editing {
-    border-color: $color-primary;
-    box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
-  }
-
   &__header {
     display: flex;
     flex-wrap: wrap;
