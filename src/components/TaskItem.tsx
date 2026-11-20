@@ -1,4 +1,3 @@
-import { useTaskContext } from '../hooks/useTaskContext'
 import type { Priority, Task } from '../types/task'
 import './TaskItem.scss'
 
@@ -10,39 +9,27 @@ const PRIORITY_LABELS: Record<Priority, string> = {
 
 interface TaskItemProps {
   task: Task
+  // Поки для завдання виконується запит, кнопки вимкнені
+  busy?: boolean
+  // Кнопка показується, лише якщо передано відповідний callback
+  onOpen?: (task: Task) => void
+  onToggle?: (task: Task) => void
+  onEdit?: (task: Task) => void
+  onDelete?: (task: Task) => void
 }
 
-function TaskItem({ task }: TaskItemProps) {
-  // Дії беремо з контексту, а не через props з батьківських компонентів
-  const { pendingDelete, editingTask, startEdit, toggleTask, requestDelete } = useTaskContext()
-  const isPendingDelete = pendingDelete?.ids.includes(task.id) ?? false
-  const isEditing = editingTask?.id === task.id
-
-  function handleEdit() {
-    startEdit(task.id)
-    // Форма знаходиться вгорі сторінки, тому прокручуємо до неї
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-  const className = [
-    'task-item',
-    task.completed && 'task-item--completed',
-    isEditing && 'task-item--editing',
-    isPendingDelete && 'task-item--pending',
-  ]
-    .filter(Boolean)
-    .join(' ')
+function TaskItem({ task, busy = false, onOpen, onToggle, onEdit, onDelete }: TaskItemProps) {
+  const className = task.completed ? 'task-item task-item--completed' : 'task-item'
 
   return (
     <li className={className}>
       <div className="task-item__header">
-        {/* Умовний рендеринг: позначка показується лише для виконаного завдання */}
         {task.completed && (
           <span className="task-item__status" aria-label="Виконано">
             ✓
           </span>
         )}
         <h3 className="task-item__title">{task.title}</h3>
-        {isPendingDelete && <span className="task-item__pending-label">Буде видалено</span>}
       </div>
 
       {task.description && <p className="task-item__description">{task.description}</p>}
@@ -56,30 +43,41 @@ function TaskItem({ task }: TaskItemProps) {
       </div>
 
       <div className="task-item__actions">
-        <button
-          className="task-item__button task-item__button--toggle"
-          type="button"
-          disabled={isPendingDelete}
-          onClick={() => toggleTask(task.id)}
-        >
-          {task.completed ? 'Повернути в роботу' : 'Позначити виконаним'}
-        </button>
-        <button
-          className="task-item__button"
-          type="button"
-          disabled={isPendingDelete}
-          onClick={handleEdit}
-        >
-          Редагувати
-        </button>
-        <button
-          className="task-item__button task-item__button--delete"
-          type="button"
-          disabled={isPendingDelete}
-          onClick={() => requestDelete(task.id)}
-        >
-          Видалити
-        </button>
+        {onOpen && (
+          <button className="task-item__button" type="button" onClick={() => onOpen(task)}>
+            Деталі
+          </button>
+        )}
+        {onToggle && (
+          <button
+            className="task-item__button task-item__button--toggle"
+            type="button"
+            disabled={busy}
+            onClick={() => onToggle(task)}
+          >
+            {task.completed ? 'Повернути в роботу' : 'Позначити виконаним'}
+          </button>
+        )}
+        {onEdit && (
+          <button
+            className="task-item__button"
+            type="button"
+            disabled={busy}
+            onClick={() => onEdit(task)}
+          >
+            Редагувати
+          </button>
+        )}
+        {onDelete && (
+          <button
+            className="task-item__button task-item__button--delete"
+            type="button"
+            disabled={busy}
+            onClick={() => onDelete(task)}
+          >
+            Видалити
+          </button>
+        )}
       </div>
     </li>
   )

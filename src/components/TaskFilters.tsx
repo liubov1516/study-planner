@@ -1,4 +1,3 @@
-import { useTaskContext } from '../hooks/useTaskContext'
 import type { TaskFilter } from '../types/task'
 import './TaskFilters.scss'
 
@@ -8,17 +7,15 @@ const FILTERS: { value: TaskFilter; label: string }[] = [
   { value: 'active', label: 'Не виконані' },
 ]
 
-function TaskFilters() {
-  const { tasks, filter, setFilter, clearCompleted, resetTasks } = useTaskContext()
+interface TaskFiltersProps {
+  filter: TaskFilter
+  // Кількість завдань поточної сторінки для кожного фільтра
+  counts: Record<TaskFilter, number>
+  onFilterChange: (filter: TaskFilter) => void
+}
 
-  // Кількість завдань для кожного фільтра (derived state)
-  const completedCount = tasks.filter((task) => task.completed).length
-  const counts: Record<TaskFilter, number> = {
-    all: tasks.length,
-    completed: completedCount,
-    active: tasks.length - completedCount,
-  }
-
+// Фільтр - client/UI state: він лише ховає частину вже завантажених завдань сторінки
+function TaskFilters({ filter, counts, onFilterChange }: TaskFiltersProps) {
   return (
     <div className="task-filters" role="group" aria-label="Фільтр завдань">
       {FILTERS.map(({ value, label }) => (
@@ -31,28 +28,11 @@ function TaskFilters() {
           }
           type="button"
           aria-pressed={value === filter}
-          onClick={() => setFilter(value)}
+          onClick={() => onFilterChange(value)}
         >
           {label} ({counts[value]})
         </button>
       ))}
-      {/* Кнопка очищення з'являється, лише коли є що очищати */}
-      {counts.completed > 0 && (
-        <button
-          className="task-filters__button task-filters__button--clear"
-          type="button"
-          onClick={clearCompleted}
-        >
-          Очистити виконані
-        </button>
-      )}
-      <button
-        className="task-filters__button task-filters__button--reset"
-        type="button"
-        onClick={resetTasks}
-      >
-        Скинути дані
-      </button>
     </div>
   )
 }
